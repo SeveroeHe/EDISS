@@ -93,23 +93,26 @@ app.post("/buyProducts", (request, response) => {
 				add_order = add_order.substring(0, add_order.length-1)+";"
 				db.update(add_order,(err, result)=>{
 					if(err) console.log(err);
-				});
-				//update recommendation table
-				var add_recom = "INSERT INTO recommend (mainProduct, recommendProduct, quantity) VALUES	";
-				for(var i in keyset) {
-					for(var j in keyset) {
-						if(i !== j) {
-							add_recom += "('"+keyset[i]+"','"+keyset[j]+"',"+order[keyset[j]]+"),"
-						} 
+					//update recommendation table
+					var add_recom = "INSERT INTO recommend (mainProduct, recommendProduct, quantity) VALUES	";
+					
+					for(var i in keyset) {
+						for(var j in keyset) {
+							if(i !== j) {
+								add_recom += "('"+keyset[i]+"','"+keyset[j]+"',"+order[keyset[j]]+"),"
+							} 
+						}
 					}
-				}
-				add_recom = add_recom.substring(0, add_recom.length-1)+";"
-				if(keyset.length > 1){
-					db.update(add_recom,(err, result)=>{
-						if(err) console.log(err);
-					})
-				}
-				response.json({"message": 'The action was successful'})
+					add_recom = add_recom.substring(0, add_recom.length-1)+";"
+					if(keyset.length > 1){
+						db.update(add_recom,(err, result)=>{
+							if(err) console.log(err);
+							response.json({"message": 'The action was successful'})
+						})
+					}else{
+						response.json({"message": 'The action was successful'})
+					}
+				});
 			}
 		})
 	}

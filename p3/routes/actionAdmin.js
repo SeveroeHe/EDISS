@@ -44,9 +44,9 @@ app.post("/addProducts",(request, response) =>{
 								return
 							}else{
 								if(key === "productName") {
-	    							pname = request.body[key]
+	    							pname = request.body[key].replace("'","''")
 	    						}
-	    						obj[key] = request.body[key]
+	    						obj[key] = request.body[key].replace("'","''")
 							} 
 	    				}
 	    				db.addproduct(obj, (err, result) =>{
@@ -96,14 +96,14 @@ app.post("/modifyProduct", (request, response) =>{
 								return
 							}else{
 								if(key === "productName") {
-		    						pname = request.body[key]
+		    						pname = request.body[key].replace("'","''")
 		    					}else if(key === "asin") {
 		    						asin = request.body[key]
 		    					}
 		    					if(key === "group") {
 		    						fields += "pgroup = '"+request.body[key]+"',"
 		    					}else{
-		    						fields += key+" = '"+request.body[key]+"',"
+		    						fields += key+" = '"+request.body[key].replace("'","''")+"',"
 		    					}    					
 							}
 						}
@@ -188,26 +188,30 @@ app.post("/productsPurchased",(request, response)=>{
 			    		var getorder = "SELECT asin, SUM(quantity) AS quantity FROM orders WHERE userid = "+userid+
 			    		" Group By asin;"
 			    		db.search(getorder, (err, result) =>{
-			    			// console.log(result)
-			    			//based on asid, , get product name
-			    			var quantity_ref = {}
-			    			var getPname = "SELECT productName, asin FROM product WHERE asin IN ("
-			    			for(var i in result) {
-			    				getPname += "'"+result[i]['asin']+"',"
-			    				quantity_ref[result[i]['asin']] = result[i]['quantity']
+			    			if(result.length === 0) {
+			    				response.json({"message": "The action was successful","products":[]})
+			    			}else{
+				    			// console.log(result)
+				    			//based on asid, , get product name (has histpry)
+				    			var quantity_ref = {}
+				    			var getPname = "SELECT productName, asin FROM product WHERE asin IN ("
+				    			for(var i in result) {
+				    				getPname += "'"+result[i]['asin']+"',"
+				    				quantity_ref[result[i]['asin']] = result[i]['quantity']
+				    			}
+				    			getPname = getPname.substring(0,getPname.length-1)+");"
+				    			db.search(getPname, (err, rows)=>{
+				    				if(err) console.log(err)
+				    				var history = []
+				    				for(var i in rows) {
+				    					var obj = {}
+				    					obj["productName"] = rows[i]["productName"]
+				    					obj['quantity'] = quantity_ref[rows[i]["asin"]]
+				    					history.push(obj)
+				    				}
+				    				response.json({"message": "The action was successful","products":history})
+				    			})
 			    			}
-			    			getPname = getPname.substring(0,getPname.length-1)+");"
-			    			db.search(getPname, (err, rows)=>{
-			    				if(err) console.log(err)
-			    				var history = []
-			    				for(var i in rows) {
-			    					var obj = {}
-			    					obj["productName"] = rows[i]["productName"]
-			    					obj['quantity'] = quantity_ref[rows[i]["asin"]]
-			    					history.push(obj)
-			    				}
-			    				response.json({"message": "The action was successful","products":history})
-			    			})
 			    		})
 			    	}
     			})

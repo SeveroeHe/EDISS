@@ -31,7 +31,7 @@ app.post("/registerUser",(request, response) =>{
 					console.log("empty field in registration")
 					throw err
 				}else {
-					obj[key] = request.body[key]
+					obj[key] = request.body[key].replace("'","''");
 				}
 			}
 			obj['isadmin'] = 0 // indicating not an admin user
@@ -66,7 +66,7 @@ app.post("/updateInfo", (request, response) =>{
 					response.json({"message": "The input you provided is not valid"});
 					return
 				}
-				fields += key+" = '"+request.body[key]+"',"
+				fields += key+" = '"+request.body[key].replace("'","''")+"',"
 				if(key === "username"){
 					new_username = request.body[key]
 					console.log("possible new name: "+new_username)
@@ -114,7 +114,7 @@ app.post('/login', (request, response) => {
 
     		request.session.user = result[0].username;
     		request.session.userid = result[0].ID.toString();
-    		console.log(result[0].ID.toString())
+    		// console.log(result[0].ID.toString())
     		// response.render('logged_in', {'username': username})
     		response.json({"message": "Welcome "+result[0].fname})
     	}
