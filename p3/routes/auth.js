@@ -31,12 +31,13 @@ app.post("/registerUser",(request, response) =>{
 					console.log("empty field in registration")
 					throw err
 				}else {
-					obj[key] = request.body[key].replace("'","''");
+					obj[key] = request.body[key].toString()//.replace("'","''");
 				}
 			}
 			obj['isadmin'] = 0 // indicating not an admin user
 			db.regist(obj, function(err, result){
 				if(err) {
+					console.log(err)
 					response.json({"message": "The input you provided is not valid"});
 				}else {
 					response.json({"message": request.body.fname+" was registered successfully"});
@@ -66,7 +67,7 @@ app.post("/updateInfo", (request, response) =>{
 					response.json({"message": "The input you provided is not valid"});
 					return
 				}
-				fields += key+" = '"+request.body[key].replace("'","''")+"',"
+				fields += key + " = '" + request.body[key].toString().replace("'","''") + "',"
 				if(key === "username"){
 					new_username = request.body[key]
 					console.log("possible new name: "+new_username)

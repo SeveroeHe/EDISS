@@ -44,9 +44,9 @@ app.post("/addProducts",(request, response) =>{
 								return
 							}else{
 								if(key === "productName") {
-	    							pname = request.body[key].replace("'","''")
+	    							pname = request.body[key].toString().replace("'","''")
 	    						}
-	    						obj[key] = request.body[key].replace("'","''")
+	    						obj[key] = request.body[key].toString().replace("'","''")
 							} 
 	    				}
 	    				db.addproduct(obj, (err, result) =>{
@@ -96,14 +96,14 @@ app.post("/modifyProduct", (request, response) =>{
 								return
 							}else{
 								if(key === "productName") {
-		    						pname = request.body[key].replace("'","''")
+		    						pname = request.body[key].toString().replace("'","''")
 		    					}else if(key === "asin") {
 		    						asin = request.body[key]
 		    					}
 		    					if(key === "group") {
 		    						fields += "pgroup = '"+request.body[key]+"',"
 		    					}else{
-		    						fields += key+" = '"+request.body[key].replace("'","''")+"',"
+		    						fields += key+" = '"+request.body[key].toString().replace("'","''")+"',"
 		    					}    					
 							}
 						}

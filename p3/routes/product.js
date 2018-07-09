@@ -63,14 +63,22 @@ app.post("/buyProducts", (request, response) => {
 		response.json({"message": "There are no products that match that criteria"})
 	}else{
 		//create hashmap of the products
-		order = {}
-		for(var i = 0; i <= request.body.products.length - 1; i++) {
-			var key = request.body.products[i].asin;
-			// console.log(key)
-			if(Object.keys(order).includes(key)) order[key]++;
-			else order[key] = 1;
-		}
-		// console.log(Object.keys(order))
+		var order = {}
+		request.body.products.forEach((product)=>{
+			if(product.asin in order) {
+				order[product.asin]++;
+			}else{
+				order[product.asin] = 1;
+			}
+		})
+		// for(var i = 0; i <= request.body.products.length - 1; i++) {
+		// 	var key = request.body.products[i].asin;
+		// 	// console.log(key)
+		// 	if(Object.keys(order).includes(key)) order[key]++;
+		// 	else order[key] = 1;
+		// }
+		console.log("******")
+		console.log(order)
 		//check if there exists nonexist asin
 		var sql = "SELECT asin FROM product WHERE asin In (";
 		var keyset = Object.keys(order)
@@ -87,22 +95,32 @@ app.post("/buyProducts", (request, response) => {
 			}else{
 				//update order table
 				var add_order = "INSERT INTO orders (userid, asin, quantity) VALUES ";
-				for(var i in keyset) {
-					add_order += "("+userid+",'"+keyset[i]+"',"+order[keyset[i]]+"),"
-				}
+				Object.keys(order).forEach((key)=>{
+					add_order += "("+userid+",'"+key+"',"+order[key]+"),"
+				})
+				// for(var key of keyset) {
+				// 	add_order += "("+userid+",'"+key+"',"+order[key]+"),"
+				// }
 				add_order = add_order.substring(0, add_order.length-1)+";"
 				db.update(add_order,(err, result)=>{
 					if(err) console.log(err);
 					//update recommendation table
 					var add_recom = "INSERT INTO recommend (mainProduct, recommendProduct, quantity) VALUES	";
-					
-					for(var i in keyset) {
-						for(var j in keyset) {
-							if(i !== j) {
-								add_recom += "('"+keyset[i]+"','"+keyset[j]+"',"+order[keyset[j]]+"),"
-							} 
-						}
-					}
+
+					Object.keys(order).forEach((keyi)=>{
+						Object.keys(order).forEach((keyj)=>{
+							if(keyi !== keyj) {
+								add_recom += "('"+keyi+"','"+keyj+"',"+order[keyj]+"),"
+							}
+						})
+					})
+					// for(var i in keyset) {
+					// 	for(var j in keyset) {
+					// 		if(i !== j) {
+					// 			add_recom += "('"+keyset[i]+"','"+keyset[j]+"',"+order[keyset[j]]+"),"
+					// 		} 
+					// 	}
+					// }
 					add_recom = add_recom.substring(0, add_recom.length-1)+";"
 					if(keyset.length > 1){
 						db.update(add_recom,(err, result)=>{

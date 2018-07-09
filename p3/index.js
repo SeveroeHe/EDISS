@@ -40,6 +40,7 @@ app.use((err, request, response) => {
   response.json({
     	message: "error happens"
   })
+  return
 })
 
 

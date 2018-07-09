@@ -52,11 +52,16 @@ con.connect(function(err, callback) {
     if (err) throw err;
     console.log("1 record inserted");
   });
-  con.query("CREATE TABLE product (asin VARCHAR(255), productName VARCHAR(255), productDescription VARCHAR(255), pgroup VARCHAR(255), UNIQUE(asin));", function (err, result) {
+  con.query("CREATE TABLE product (asin VARCHAR(255), productName VARCHAR(255), productDescription VARCHAR(255), pgroup VARCHAR(255), UNIQUE(asin), PRIMARY KEY (asin));", function (err, result) {
     if (err) throw err;
     console.log("table product created");
     // process.exit()
   });
+  // con.query("CREATE INDEX asin_index ON orders(userid) USING BTREE;", function (err, result) {
+  //   if (err) throw err;
+  //   console.log("index build for product complete");
+  //   // process.exit()
+  // });
   con.query("CREATE TABLE domains (asin VARCHAR(255), pgroup VARCHAR(255));", function (err, result) {
     if (err) throw err;
     console.log("table domains created");
@@ -70,9 +75,18 @@ con.connect(function(err, callback) {
     console.log("table orders created");
     // process.exit()
   });
+  con.query("CREATE INDEX userid_index ON orders(userid) USING BTREE;", function (err, result) {
+    if (err) throw err;
+    console.log("index build complete");
+    // process.exit()
+  });
   con.query("CREATE TABLE recommend (mainProduct VARCHAR(255), recommendProduct VARCHAR(255), quantity INT);", function (err, result) {
     if (err) throw err;
     console.log("table recommend created");
+  });
+  con.query("CREATE INDEX mainProduct_index ON recommend(mainProduct) USING BTREE;", function (err, result) {
+    if (err) throw err;
+    console.log("index build complete");
     process.exit()
   });
 
