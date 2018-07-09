@@ -8,7 +8,7 @@ var mysql = require('mysql');
 const config = require('./baseConfig.json'); 
 
 var pool = mysql.createPool({
-  connectionLimit: 5,
+  connectionLimit: 10,
   host: config.host,
   user: config.user,
   password: config.password,
