@@ -13,6 +13,9 @@ npm install line-reader
 var mysql      = require('mysql'),
     co         = require('co'),
     wrapper    = require('co-mysql');
+// const config = require('./baseConfig.json'); 
+const config = require('./connectAWS.json'); 
+
 var query;
 var jsonRecord;
 var execute = true;
@@ -24,10 +27,10 @@ var lineReader = require('line-reader');
 
 /*************************You need to change this to be appropriate for your system************************************************************/
 var connection = mysql.createConnection({
-  host     : 'sampleprojects.clpsfhfwzha1.us-east-1.rds.amazonaws.com',
-  user     : 'summer2016user',
-  password : 'EDISS_2016',
-  database : 'SampleProjects',
+  host     : config.host,
+  user     : config.user,
+  password : config.password,
+  database : config.database,
   multipleStatements: 'true'
 });
 
@@ -37,9 +40,9 @@ var values = ""; //The records read from the file.
 var numRecords = 0; //The current number of records read from the file.
 
 /********************************You might need to adjust the block size.  This specifies how many records to insert at once***********************/
-var recordBlock = 5000; //The number of records to write at once.
+var recordBlock = 1000; //The number of records to write at once.
 
-lineReader.eachLine('./InputData/jsonRecords.json', function(line, last) {
+lineReader.eachLine('./projectRecordsJSON.json', function(line, last) {
   execute = false;
   currentLine = line.toString().replace(/'/g, "\"", "g");
   try{
@@ -52,24 +55,24 @@ lineReader.eachLine('./InputData/jsonRecords.json', function(line, last) {
     if(jsonRecord.description == null){
       jsonRecord.description = "";
     }
-    values += `('${jsonRecord.title}', '${jsonRecord.categories[0]}', '${jsonRecord.description}', '${jsonRecord.asin}')`;
+    values += `('${jsonRecord.title.toString().trim()}', '${jsonRecord.categories[0][0].toString().trim()}', '${jsonRecord.description.toString().trim()}', '${jsonRecord.asin.toString().trim()}')`;
     numRecords++;
 
 //****************************************************Change the query to align with your schema******************************************************/
     if (numRecords == recordBlock) {
-      query = `INSERT INTO products (Name, PGroup, Description, ASIN) VALUES ${values};`; //Template, replaces ${values} with the value of values.
+      query = `INSERT INTO product (productName, pgroup, productDescription, asin) VALUES ${values};`; //Template, replaces ${values} with the value of values.
       values = "";
       numRecords = 0;
       execute = true;
-      console.log(query);
     }
   }catch(err) {
     execute = false;//there was a quote in the text and the parse failed ... skip insert
     console.log(err);
+    console.log(query);
   }
   if(execute){
     co(function* () {
-      console.log("****************************************************in execute**************************************************************************************");
+      // console.log("****************************************************in execute**************************************************************************************");
         var resp = yield sql.query(query);
         console.log("resp = " + resp);
         totalRecords += recordBlock;

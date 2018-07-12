@@ -44,7 +44,7 @@ con.connect(function(err, callback) {
   //recreate tables
   con.query("CREATE TABLE users (ID INT AUTO_INCREMENT, username VARCHAR(255), password VARCHAR(255), fname VARCHAR(255),lname VARCHAR(255),"+
     "address VARCHAR(255), city VARCHAR(255), state VARCHAR(255), zip VARCHAR(255), email VARCHAR(255),"+
-     "isadmin INT(255),UNIQUE(username),PRIMARY KEY (ID));", function (err, result) {
+     "isadmin INT(255),UNIQUE(username),PRIMARY KEY (ID)) CHARACTER SET=utf8mb4 COLLATE = utf8mb4_unicode_ci;", function (err, result) {
     if (err) throw err;
     console.log("table users created");
   });
@@ -52,7 +52,7 @@ con.connect(function(err, callback) {
     if (err) throw err;
     console.log("1 record inserted");
   });
-  con.query("CREATE TABLE product (asin VARCHAR(255), productName VARCHAR(255), productDescription VARCHAR(255), pgroup VARCHAR(255), UNIQUE(asin), PRIMARY KEY (asin));", function (err, result) {
+  con.query("CREATE TABLE product (asin VARCHAR(255), productName LONGTEXT, productDescription LONGTEXT, pgroup VARCHAR(255), UNIQUE(asin), PRIMARY KEY (asin));", function (err, result) {
     if (err) throw err;
     console.log("table product created");
     // process.exit()

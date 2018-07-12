@@ -2,3 +2,5 @@
 /p3/baseConfig.json
 /p3/connectAWS.json
 /p3/node_modules/*
+projectRecordsJSON.json
+UserData.csv
