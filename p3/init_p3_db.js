@@ -42,9 +42,9 @@ con.connect(function(err, callback) {
   });
 
   //recreate tables
-  con.query("CREATE TABLE users (ID INT AUTO_INCREMENT, username VARCHAR(255), password VARCHAR(255), fname VARCHAR(255),lname VARCHAR(255),"+
-    "address VARCHAR(255), city VARCHAR(255), state VARCHAR(255), zip VARCHAR(255), email VARCHAR(255),"+
-     "isadmin INT(255),UNIQUE(username),PRIMARY KEY (ID)) CHARACTER SET=utf8mb4 COLLATE = utf8mb4_unicode_ci;", function (err, result) {
+  con.query("CREATE TABLE users (ID INT AUTO_INCREMENT, username VARCHAR(150), password VARCHAR(150), fname VARCHAR(150),lname VARCHAR(150),"+
+    "address VARCHAR(150), city VARCHAR(150), state VARCHAR(150), zip VARCHAR(150), email VARCHAR(150),"+
+     "isadmin INT(150),UNIQUE(username),PRIMARY KEY (ID)) CHARACTER SET=utf8mb4 COLLATE = utf8mb4_unicode_ci;", function (err, result) {
     if (err) throw err;
     console.log("table users created");
   });
