@@ -37,6 +37,7 @@ var connection = mysql.createConnection({
 var sql = wrapper(connection);
 
 var values = ""; //The records read from the file.
+// var pairs = []; //The records read from the file.
 var numRecords = 0; //The current number of records read from the file.
 
 /********************************You might need to adjust the block size.  This specifies how many records to insert at once***********************/
@@ -44,7 +45,7 @@ var recordBlock = 1000; //The number of records to write at once.
 
 lineReader.eachLine('./projectRecordsJSON.json', function(line, last) {
   execute = false;
-  currentLine = line.toString().replace(/'/g, "\"", "g");
+  currentLine = line.toString().replace(/'/g, "\"", "g").replace("'","''");
   try{
     jsonRecord = JSON.parse(currentLine);
 
@@ -55,11 +56,14 @@ lineReader.eachLine('./projectRecordsJSON.json', function(line, last) {
     if(jsonRecord.description == null){
       jsonRecord.description = "";
     }
+    // var tmp = [jsonRecord.title.toString().trim(),jsonRecord.categories[0][0].toString().trim(),jsonRecord.description.toString().trim(),jsonRecord.asin.toString().trim()]
+    // values.push(tmp)
     values += `('${jsonRecord.title.toString().trim()}', '${jsonRecord.categories[0][0].toString().trim()}', '${jsonRecord.description.toString().trim()}', '${jsonRecord.asin.toString().trim()}')`;
     numRecords++;
 
 //****************************************************Change the query to align with your schema******************************************************/
     if (numRecords == recordBlock) {
+      // query = `INSERT INTO product (productName, pgroup, productDescription, asin) VALUES (?);`; //Template, replaces ${values} with the value of values.
       query = `INSERT INTO product (productName, pgroup, productDescription, asin) VALUES ${values};`; //Template, replaces ${values} with the value of values.
       values = "";
       numRecords = 0;
@@ -73,7 +77,8 @@ lineReader.eachLine('./projectRecordsJSON.json', function(line, last) {
   if(execute){
     co(function* () {
       // console.log("****************************************************in execute**************************************************************************************");
-        var resp = yield sql.query(query);
+        var resp = yield sql.query(query,values);
+        // values = [];
         console.log("resp = " + resp);
         totalRecords += recordBlock;
         console.log(totalRecords + " records inserted.");

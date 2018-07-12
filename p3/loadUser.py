@@ -3,8 +3,8 @@ import csv
 import pymysql
 import json
 
-config = './baseConfig.json'
-# config = './connectAWS.json'
+# config = './baseConfig.json'
+config = './connectAWS.json'
 
 user_csv = './UserData.csv'
 

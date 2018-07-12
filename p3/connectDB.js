@@ -25,7 +25,7 @@ exports.search = (sql, callback) =>{
 			// connection.release();
 			callback(err, null);
 		}else{
-			console.log(sql)
+			// console.log(sql)
 			connection.query(sql, function (err, result) {
 				connection.release();
 		    	if (err) callback(err,null);
@@ -65,7 +65,7 @@ exports.addproduct = (obj, callback) =>{
 			// connection.release();
 			callback(err, null);
 		}else {
-			console.log(sql)
+			// console.log(sql)
 			connection.query(sql, (err, result)=>{
 				connection.release();
 				if(err) callback(err, null);
@@ -81,7 +81,7 @@ exports.update = (sql, callback) =>{
 			// connection.release();
 			callback(err, null);
 		}else {
-			console.log(sql)
+			// console.log(sql)
 			connection.query(sql, (err, result) =>{
 				connection.release();
 				if(err) callback(err, null);
